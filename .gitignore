@@ -1,0 +1,33 @@
+# --- Ruby / Bundler ---
+/.bundle/
+/vendor/bundle/
+/log/
+*.gem
+
+# --- rbenv local version file (usually fine to commit, but exclude if you
+# want teammates to pick their own — remove this line if you'd rather track it) ---
+# .ruby-version
+
+# --- Cucumber ---
+/rerun.txt
+/reports/
+
+# --- ML model cache (informers/onnxruntime downloads models on first run —
+# no need to commit multi-MB model weights to git) ---
+.cache/
+*.onnx
+*.safetensors
+
+# --- Generated output (feature files produced by the pipeline are
+# reproducible from the input sentences — no need to version them,
+# but comment this out if you'd rather track generated examples) ---
+features/generated_*.feature
+
+# --- OS / editor cruft ---
+.DS_Store
+*.swp
+*~
+
+# --- Environment / secrets, in case you add API keys later ---
+.env 
+venv/
