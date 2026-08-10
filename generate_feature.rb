@@ -6,6 +6,7 @@ scenario_title = "Valid login"
 sentences = [
   "Go to the login screen",
   "Type 'tomsmith' into the Username box",
+  "Order a pepperoni pizza",
   "Enter \"SuperSecretPassword!\" in the Password field",
   "Press the Login button",
   "The page should show \"You logged into a secure area\""
@@ -26,11 +27,20 @@ end
 
 results = sentences.map { |s| GherkinGen.process(s) }
 
+low_confidence = results.reject { |r| r[:confident] }
+if low_confidence.any?
+  puts "WARNING: #{low_confidence.length} sentence(s) had no confident match and were skipped:"
+  low_confidence.each { |r| puts "  (score #{r[:score].round(3)}) #{r[:input]}" }
+  puts
+end
+
+confident_results = results.select { |r| r[:confident] }
+
 lines = ["Feature: #{scenario_title}", "", "  Scenario: #{scenario_title}"]
 
 last_keyword = nil
-results.each_with_index do |result, i|
-  keyword = keyword_for(i, results.length, result[:gherkin])
+confident_results.each_with_index do |result, i|
+  keyword = keyword_for(i, confident_results.length, result[:gherkin])
   display_keyword = (keyword == last_keyword) ? "And" : keyword
   lines << "    #{display_keyword} #{result[:gherkin]}"
   last_keyword = keyword

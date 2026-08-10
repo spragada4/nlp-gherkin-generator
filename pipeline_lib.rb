@@ -6,7 +6,7 @@ module GherkinGen
   STEP_LIBRARY = [
     {
       pattern: "I visit the login page",
-      examples: ["go to a page", "navigate to a screen", "open a URL", "browse to a page in the app"]
+      examples: ["go to a URL", "navigate to a screen", "open a website", "browse to a location in the app"]
     },
     {
       pattern: 'I fill in {string} with {string}',
@@ -51,7 +51,11 @@ module GherkinGen
   end
 
   def self.best_match(sentence, library)
-    new_embedding = MODEL.(sentence)
+    # Strip quoted values before embedding — literal data (names, passwords,
+    # messages) is noise for intent matching; it's only needed later for
+    # value extraction, which runs separately on the original sentence.
+    sentence_for_matching = sentence.gsub(/'[^']*'|"[^"]*"/, "")
+    new_embedding = MODEL.(sentence_for_matching)
     library.map { |step| [step, cosine_similarity(new_embedding, step[:centroid])] }
            .max_by { |_, score| score }
   end
@@ -79,11 +83,30 @@ module GherkinGen
     end
   end
 
+  CONFIDENCE_THRESHOLD = 0.25
+
   def self.process(sentence)
     step, score = best_match(sentence, STEP_LIBRARY)
+
+    if score < CONFIDENCE_THRESHOLD
+      return {
+        input: sentence,
+        matched_pattern: nil,
+        score: score,
+        gherkin: nil,
+        confident: false
+      }
+    end
+
     values = extract_values(sentence)
     gherkin_line = assemble_gherkin(step, values)
-    { input: sentence, matched_pattern: step[:pattern], score: score, gherkin: gherkin_line }
+    {
+      input: sentence,
+      matched_pattern: step[:pattern],
+      score: score,
+      gherkin: gherkin_line,
+      confident: true
+    }
   end
 end
 
