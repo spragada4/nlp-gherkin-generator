@@ -33,6 +33,7 @@ module GherkinGen
     mag_a = Math.sqrt(a.sum { |x| x**2 })
     mag_b = Math.sqrt(b.sum { |x| x**2 })
     dot / (mag_a * mag_b)
+    
   end
 
   def self.average_vector(vectors)
