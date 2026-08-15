@@ -1,7 +1,7 @@
 ## 🚧 WIP: NLP Gherkin Generator 🚧 
 
 A pure Ruby project that turns plain-English test scenarios into runnable
-Cucumber `.feature` files — using local, Ruby-native ML (no Python, no
+Cucumber `.feature` files using local, Ruby-native ML (no Python, no
 external API calls) to match natural language against your existing
 Capybara step definitions.
 
