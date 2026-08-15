@@ -2,15 +2,22 @@ require_relative "pipeline_lib"
 
 # Plain-English scenario input. In a real workflow this might come from
 # a .txt file — for now it's inline so we can see the whole flow clearly.
-scenario_title = "Valid login"
-sentences = [
-  "Go to the login screen",
-  "Type 'tomsmith' into the Username box",
-  "Order a pepperoni pizza",
-  "Enter \"SuperSecretPassword!\" in the Password field",
-  "Press the Login button",
-  "The page should show \"You logged into a secure area\""
-]
+# Usage: ruby generate_feature.rb [path_to_scenarios.txt] ["Scenario title"]
+input_path = ARGV[0] || "scenarios.txt"
+scenario_title = ARGV[1] || "Generated scenario"
+
+unless File.exist?(input_path)
+  puts "Input file not found: #{input_path}"
+  puts "Usage: ruby generate_feature.rb [path_to_scenarios.txt] [\"Scenario title\"]"
+  exit 1
+end
+
+sentences = File.readlines(input_path).map(&:strip).reject(&:empty?)
+
+if sentences.empty?
+  puts "No sentences found in #{input_path}"
+  exit 1
+end
 
 # Assign Given/When/Then/And based on position:
 # first step -> Given, last "check" step -> Then, everything else -> When,
@@ -51,5 +58,6 @@ output = lines.join("\n") + "\n"
 puts "Generated feature:\n\n"
 puts output
 
-File.write("features/generated_login.feature", output)
-puts "\nWritten to features/generated_login.feature"
+output_filename = "features/generated_#{scenario_title.downcase.gsub(/[^a-z0-9]+/, '_')}.feature"
+File.write(output_filename, output)
+puts "\nWritten to #{output_filename}"

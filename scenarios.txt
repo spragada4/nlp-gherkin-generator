@@ -1,0 +1,6 @@
+Go to the login screen
+Type 'tomsmith' into the Username box
+Order a pepperoni pizza
+Enter "SuperSecretPassword!" in the Password field
+Press the Login button
+The page should show "You logged into a secure area"
