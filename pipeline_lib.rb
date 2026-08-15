@@ -1,28 +1,32 @@
 require "informers"
+require "yaml"
 
 module GherkinGen
   MODEL = Informers.pipeline("embedding", "sentence-transformers/all-MiniLM-L6-v2")
 
-  STEP_LIBRARY = [
-    {
-      pattern: "I visit the login page",
-      examples: ["go to a URL", "navigate to a screen", "open a website", "browse to a location in the app"]
-    },
-    {
-      pattern: 'I fill in {string} with {string}',
-      examples: ["type a value into a field", "enter text into an input box",
-                 "fill in a form field with a value", "type something into a text box"]
-    },
-    {
-      pattern: 'I click {string}',
-      examples: ["click a button", "press a button", "click on a link", "tap on an element"]
-    },
-    {
-      pattern: 'I should see {string}',
-      examples: ["check that some text appears on the page", "verify a message is displayed",
-                 "the page should show certain text", "confirm text is visible"]
-    }
-  ].freeze
+  STEP_DEFINITIONS_PATH = "features/step_definitions/common_steps.rb"
+  STEP_MEANINGS_PATH = "step_meanings.yml"
+
+  def self.extract_patterns(path)
+    content = File.read(path)
+    content.scan(/^\s*(?:Given|When|Then|And)\(\s*(['"])(.*?)\1/).map { |_, pattern| pattern }
+  end
+
+  def self.build_step_library
+    patterns = extract_patterns(STEP_DEFINITIONS_PATH)
+    meanings = YAML.load_file(STEP_MEANINGS_PATH)
+
+    patterns.map do |pattern|
+      examples = meanings[pattern]
+      if examples.nil? || examples.empty?
+        warn "WARNING: no paraphrase examples found in #{STEP_MEANINGS_PATH} for pattern: #{pattern.inspect} — this step will never be matched. Add examples to step_meanings.yml."
+        next nil
+      end
+      { pattern: pattern, examples: examples }
+    end.compact
+  end
+
+  STEP_LIBRARY = build_step_library.freeze
 
   def self.cosine_similarity(a, b)
     dot = a.zip(b).sum { |x, y| x * y }
