@@ -1,0 +1,23 @@
+"I visit the login page":
+  - go to a URL
+  - navigate to a screen
+  - open a website
+  - browse to a location in the app
+
+"I fill in {string} with {string}":
+  - type a value into a field
+  - enter text into an input box
+  - fill in a form field with a value
+  - type something into a text box
+
+"I click {string}":
+  - click a button
+  - press a button
+  - click on a link
+  - tap on an element
+
+"I should see {string}":
+  - check that some text appears on the page
+  - verify a message is displayed
+  - the page should show certain text
+  - confirm text is visible
