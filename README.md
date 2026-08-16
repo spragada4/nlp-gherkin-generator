@@ -1,7 +1,7 @@
-## 🚧 WIP: NLP Gherkin Generator 🚧 
+# NLP Gherkin Generator
 
 A pure Ruby project that turns plain-English test scenarios into runnable
-Cucumber `.feature` files using local, Ruby-native ML (no Python, no
+Cucumber `.feature` files — using local, Ruby-native ML (no Python, no
 external API calls) to match natural language against your existing
 Capybara step definitions.
 
@@ -147,7 +147,7 @@ threshold_check.rb            # Scratch script: view match scores across sentenc
 - **Average several paraphrase embeddings into a centroid** per step
   rather than relying on a single example sentence; this is far more
   stable.
-- **Strip quoted literal values before embedding for matching** 
+- **Strip quoted literal values before embedding for matching** —
   they're only relevant for value extraction, and including them adds
   noise to intent matching.
 - **Watch for cross-category vocabulary overlap** in paraphrase
@@ -155,7 +155,7 @@ threshold_check.rb            # Scratch script: view match scores across sentenc
   will bias matches even when it has nothing to do with actual intent.
 - **Confidence threshold (0.25)** was chosen from real score data
   (nonsense sentences scored ≤0.145, real matches scored ≥0.394 after
-  fixes), not a guess  re-validate with `threshold_check.rb` if the
+  fixes), not a guess — re-validate with `threshold_check.rb` if the
   step library grows significantly.
 
 ## Known limitations / possible next steps
