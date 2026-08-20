@@ -12,3 +12,16 @@ Type 'baduser' into the Username box
 Enter "wrongpassword" in the Password field
 Press the Login button
 The page should show "Your username is invalid!"
+
+
+Outline: Failed login attempts
+Go to the login screen
+Type '<username>' into the Username box
+Enter '<password>' in the Password field
+Press the Login button
+The page should show '<message>'
+
+Examples:
+| username | password  | message                    |
+| baduser  | wrongpass | Your username is invalid!  |
+| tomsmith | wrongpass | Your password is invalid!  |
