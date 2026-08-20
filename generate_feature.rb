@@ -12,22 +12,43 @@ end
 
 raw_lines = File.readlines(input_path).map(&:strip)
 
-# Parse into scenario blocks: a line starting with "Scenario:" begins a
-# new block; every non-blank line after it (until the next "Scenario:")
-# is one of that scenario's plain-English steps.
+# Parse a "| a | b | c |" row into ["a", "b", "c"]
+def parse_table_row(line)
+  line.split("|").map(&:strip).reject(&:empty?)
+end
+
+# Parse into scenario blocks. Three line types:
+#   "Scenario: <title>"  -> starts a plain scenario
+#   "Outline: <title>"   -> starts a scenario outline (expects an Examples: table)
+#   "Examples:"          -> switches the current outline into table-reading mode
+# Anything else is either a plain-English step or a table row, depending on mode.
 scenarios = []
 current = nil
+reading_table = false
 
 raw_lines.each do |line|
   next if line.empty?
 
   if line.start_with?("Scenario:")
-    current = { title: line.sub("Scenario:", "").strip, sentences: [] }
+    current = { type: :scenario, title: line.sub("Scenario:", "").strip, sentences: [] }
     scenarios << current
+    reading_table = false
+  elsif line.start_with?("Outline:")
+    current = { type: :outline, title: line.sub("Outline:", "").strip, sentences: [], table: [] }
+    scenarios << current
+    reading_table = false
+  elsif line.start_with?("Examples:")
+    unless current && current[:type] == :outline
+      warn "WARNING: 'Examples:' found outside an Outline block, ignoring."
+      next
+    end
+    reading_table = true
+  elsif reading_table
+    current[:table] << parse_table_row(line)
   elsif current
     current[:sentences] << line
   else
-    warn "WARNING: line found before any 'Scenario:' header, ignoring: #{line}"
+    warn "WARNING: line found before any 'Scenario:'/'Outline:' header, ignoring: #{line}"
   end
 end
 
