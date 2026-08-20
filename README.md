@@ -208,3 +208,12 @@ threshold_check.rb            # Scratch script: view match scores across sentenc
 - No support for scenario outlines / examples tables (data-driven
   scenarios) — each scenario is fully spelled out line by line.
 
+## Tech stack
+
+| Purpose | Gem |
+|---|---|
+| BDD test runner | `cucumber` |
+| Browser automation | `capybara`, `selenium-webdriver` |
+| Sentence embeddings (local ONNX inference) | `informers` |
+| Assertions | `rspec-expectations` |
+| Step metadata | Ruby's built-in `yaml` |
