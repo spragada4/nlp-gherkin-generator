@@ -89,10 +89,44 @@ def build_scenario_lines(scenario)
   lines
 end
 
+def build_outline_lines(scenario)
+  results = scenario[:sentences].map { |s| GherkinGen.process(s) }
+
+  low_confidence = results.reject { |r| r[:confident] }
+  if low_confidence.any?
+    puts "WARNING: in outline \"#{scenario[:title]}\", #{low_confidence.length} sentence(s) had no confident match and were skipped:"
+    low_confidence.each { |r| puts "  (score #{r[:score].round(3)}) #{r[:input]}" }
+  end
+
+  confident_results = results.select { |r| r[:confident] }
+
+  lines = ["  Scenario Outline: #{scenario[:title]}"]
+  last_keyword = nil
+  confident_results.each_with_index do |result, i|
+    keyword = keyword_for(i, result[:gherkin])
+    display_keyword = (keyword == last_keyword) ? "And" : keyword
+    lines << "    #{display_keyword} #{result[:gherkin]}"
+    last_keyword = keyword
+  end
+
+  if scenario[:table].any?
+    lines << ""
+    lines << "  Examples:"
+    scenario[:table].each do |row|
+      lines << "    | #{row.join(' | ')} |"
+    end
+  else
+    warn "WARNING: outline \"#{scenario[:title]}\" has no Examples: table."
+  end
+
+  lines
+end
+
 feature_lines = ["Feature: #{feature_title}", ""]
 
 scenarios.each_with_index do |scenario, i|
-  feature_lines.concat(build_scenario_lines(scenario))
+  block_lines = scenario[:type] == :outline ? build_outline_lines(scenario) : build_scenario_lines(scenario)
+  feature_lines.concat(block_lines)
   feature_lines << "" unless i == scenarios.length - 1
 end
 
