@@ -30,7 +30,7 @@ jobs:
           key: ${{ runner.os }}-informers-minilm
 
       - name: Generate feature file from plain-English scenarios
-        run: ruby generate_feature.rb scenarios.txt "CI generated login flows"
+        run: bundle exec ruby generate_feature.rb scenarios.txt "CI generated login flows"
 
       - name: Validate generated feature file (dry-run)
         run: bundle exec cucumber features/generated_ci_generated_login_flows.feature --dry-run --strict
