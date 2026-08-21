@@ -1,3 +1,4 @@
+require "fileutils"
 require "capybara/cucumber"
 require "selenium-webdriver"
 
