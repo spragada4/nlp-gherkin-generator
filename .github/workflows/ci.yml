@@ -22,3 +22,18 @@ jobs:
 
       - name: Run hand-written Cucumber suite
         run: bundle exec cucumber
+
+      - name: Cache embedding model
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache
+          key: ${{ runner.os }}-informers-minilm
+
+      - name: Generate feature file from plain-English scenarios
+        run: ruby generate_feature.rb scenarios.txt "CI generated login flows"
+
+      - name: Validate generated feature file (dry-run)
+        run: bundle exec cucumber features/generated_ci_generated_login_flows.feature --dry-run --strict
+
+      - name: Run generated feature file for real
+        run: bundle exec cucumber features/generated_ci_generated_login_flows.feature  
