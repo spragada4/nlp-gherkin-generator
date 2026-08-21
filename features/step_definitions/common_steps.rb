@@ -11,5 +11,16 @@ When("I click {string}") do |label|
 end
 
 Then("I should see {string}") do |text|
-  expect(page).to have_content(text)
+  attempts = 0
+  begin
+    expect(page).to have_content(text)
+  rescue Selenium::WebDriver::Error::UnknownError => e
+    attempts += 1
+    if attempts <= 2
+      sleep 1
+      retry
+    else
+      raise e
+    end
+  end
 end
