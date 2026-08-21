@@ -16,6 +16,12 @@ Capybara.app_host = "https://the-internet.herokuapp.com"
 Capybara.run_server = false
 Capybara.default_max_wait_time = 10
 
-After do
-  Capybara.reset_sessions!
+After do |scenario|
+  if scenario.failed?
+    timestamp = Time.now.strftime("%Y%m%d_%H%M%S")
+    path = "tmp/failure_#{timestamp}.png"
+    FileUtils.mkdir_p("tmp")
+    page.save_screenshot(path)
+    puts "Screenshot saved: #{path}"
+  end
 end
