@@ -37,3 +37,10 @@ jobs:
 
       - name: Run generated feature file for real
         run: bundle exec cucumber features/generated_ci_generated_login_flows.feature  
+
+      - name: Upload failure screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: failure-screenshots
+          path: tmp/*.png

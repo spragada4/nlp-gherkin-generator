@@ -15,7 +15,7 @@ end
 Capybara.default_driver = :selenium_chrome_headless_ci
 Capybara.app_host = "https://the-internet.herokuapp.com"
 Capybara.run_server = false
-Capybara.default_max_wait_time = 10
+Capybara.default_max_wait_time = 20
 
 After do |scenario|
   if scenario.failed?
